@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galleri — Hallvardbo Speiderhytte</title>
+  <meta name="description" content="Bilder fra Hallvardbo speiderhytte — hytta, brygga, naturen og uteområdet.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header__inner">
+      <a href="index.html"><img src="images/logo.png" alt="Hallvardbo Speiderhytte" class="header__logo"></a>
+      <nav class="nav">
+        <a href="index.html">Hjem</a>
+        <a href="historien.html">Historien</a>
+        <a href="leie.html">Leie</a>
+        <a href="praktisk-info.html">Praktisk info</a>
+        <a href="galleri.html" class="active">Galleri</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+      <button class="hamburger" aria-label="Meny">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <nav class="mobile-nav">
+    <a href="index.html">Hjem</a>
+    <a href="historien.html">Historien</a>
+    <a href="leie.html">Leie</a>
+    <a href="praktisk-info.html">Praktisk info</a>
+    <a href="galleri.html" class="active">Galleri</a>
+    <a href="kontakt.html">Kontakt</a>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <section class="page-header">
+    <div class="hero__bg" style="background-image: url('images/balplass.jpg')"></div>
+    <div class="page-header__content">
+      <h1>Galleri</h1>
+    </div>
+  </section>
+
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none">
+    <path d="M0,20 C360,55 720,0 1080,30 C1260,45 1380,10 1440,25 L1440,60 L0,60 Z" fill="var(--cream)"/>
+  </svg>
+
+  <!-- GALLERY -->
+  <section class="section section--cream">
+    <div class="container">
+      <div class="section-intro fade-up">
+        <h2>Bilder fra Hallvardbo</h2>
+        <p>Klikk på et bilde for å se det i fullskjerm.</p>
+        <div class="divider"></div>
+      </div>
+
+      <div class="gallery-grid stagger">
+        <div class="gallery-item fade-up" data-caption="Hallvardbo — forsiden av hytta">
+          <img src="images/forsiden.jpg" alt="Hallvardbo forsiden" loading="lazy">
+          <div class="gallery-item__overlay"><span>Forsiden av hytta</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Badebrygge og utsikt over Langen">
+          <img src="images/brygge1.jpg" alt="Badebrygge ved Langen" loading="lazy">
+          <div class="gallery-item__overlay"><span>Badebrygge og Langen</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Stue med peis">
+          <img src="images/peisstue1.jpg" alt="Peisstue" loading="lazy">
+          <div class="gallery-item__overlay"><span>Stue med peis</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Peisstue mot kjøkken">
+          <img src="images/peisstue2.jpg" alt="Peisstue mot kjøkken" loading="lazy">
+          <div class="gallery-item__overlay"><span>Peisstue mot kjøkken</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Kjøkken med utsikt">
+          <img src="images/kjokken1.jpg" alt="Kjøkken" loading="lazy">
+          <div class="gallery-item__overlay"><span>Kjøkken med utsikt</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Kjøkken med stekeovn og kjøleskap">
+          <img src="images/kjokken2.jpg" alt="Kjøkken med stekeovn" loading="lazy">
+          <div class="gallery-item__overlay"><span>Kjøkken med stekeovn</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Soverom 1 med vindu">
+          <img src="images/soverom1a.jpg" alt="Soverom 1" loading="lazy">
+          <div class="gallery-item__overlay"><span>Soverom 1</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Soverom 1 — to enkeltsenger">
+          <img src="images/soverom1b.jpg" alt="Soverom 1 enkeltsenger" loading="lazy">
+          <div class="gallery-item__overlay"><span>Soverom 1 — enkeltsenger</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Soverom 2 med køyeseng">
+          <img src="images/soverom2.jpg" alt="Soverom 2" loading="lazy">
+          <div class="gallery-item__overlay"><span>Soverom 2</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Sovesalen på loftet">
+          <img src="images/sovesal.jpg" alt="Sovesal" loading="lazy">
+          <div class="gallery-item__overlay"><span>Sovesal</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="2 av 5 kanoer">
+          <img src="images/kanoer.jpg" alt="Kanoer" loading="lazy">
+          <div class="gallery-item__overlay"><span>Kanoer</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Badebrygge — utsikt over Langen">
+          <img src="images/brygge2.jpg" alt="Badebrygge" loading="lazy">
+          <div class="gallery-item__overlay"><span>Badebrygge</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Terrasse med sitteområde">
+          <img src="images/terrasse.jpg" alt="Terrasse" loading="lazy">
+          <div class="gallery-item__overlay"><span>Terrasse</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Uteområde og bakside av hytta">
+          <img src="images/uteomrade.jpg" alt="Uteområde" loading="lazy">
+          <div class="gallery-item__overlay"><span>Uteområde</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Hallvardbo fra gressletta">
+          <img src="images/fasade.jpg" alt="Hallvardbo nedenfra" loading="lazy">
+          <div class="gallery-item__overlay"><span>Hallvardbo fra gressletta</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Baksiden med balkong">
+          <img src="images/balkong.jpg" alt="Balkong" loading="lazy">
+          <div class="gallery-item__overlay"><span>Balkong</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Gang inne i hytta">
+          <img src="images/gang.jpg" alt="Gang" loading="lazy">
+          <div class="gallery-item__overlay"><span>Gang</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Stien mot badebrygga">
+          <img src="images/mot_brygge.jpg" alt="Mot brygge" loading="lazy">
+          <div class="gallery-item__overlay"><span>Mot badebrygga</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Bålplass ved Langen">
+          <img src="images/balplass.jpg" alt="Bålplass" loading="lazy">
+          <div class="gallery-item__overlay"><span>Bålplass ved Langen</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Gressletta nedfor hytta">
+          <img src="images/gressletta.jpg" alt="Gressletta" loading="lazy">
+          <div class="gallery-item__overlay"><span>Gressletta</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Skilt — Hallvardbo anno 1937">
+          <img src="images/skilt.jpg" alt="Hallvardbo skilt" loading="lazy">
+          <div class="gallery-item__overlay"><span>Skilt — anno 1937</span></div>
+        </div>
+        <div class="gallery-item fade-up" data-caption="Utedoer og vedbod">
+          <img src="images/toalett_vedskjul.jpg" alt="Utedo og vedbod" loading="lazy">
+          <div class="gallery-item__overlay"><span>Utedo og vedbod</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox">
+    <button class="lightbox__close" aria-label="Lukk">&times;</button>
+    <button class="lightbox__nav lightbox__nav--prev" aria-label="Forrige">&#8592;</button>
+    <button class="lightbox__nav lightbox__nav--next" aria-label="Neste">&#8594;</button>
+    <img src="" alt="Fullskjerm bilde">
+    <div class="lightbox__caption"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <img src="images/logo.png" alt="Hallvardbo">
+          <p>Hallvardbo speiderhytte ved Langen, Siggerud. Driftet av 1. Haugerud Speidergruppe.</p>
+        </div>
+        <div>
+          <h4>Sider</h4>
+          <a href="historien.html">Historien</a>
+          <a href="leie.html">Leie</a>
+          <a href="praktisk-info.html">Praktisk info</a>
+          <a href="galleri.html">Galleri</a>
+          <a href="kontakt.html">Kontakt</a>
+        </div>
+        <div>
+          <h4>Kontakt</h4>
+          <a href="mailto:utleie@hallvardbo.no">utleie@hallvardbo.no</a>
+          <a href="tel:+4799777610">+47 997 77 610</a>
+          <a href="https://maps.google.com/?q=Gjevikbakkene+47,+1404+Siggerud,+Norge" target="_blank">Gjevikbakkene 47, 1404 Siggerud</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        &copy; 2025 Hallvardbo Speiderhytte. Driftet av 1. Haugerud Speidergruppe.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
