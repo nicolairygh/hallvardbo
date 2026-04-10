@@ -1,0 +1,178 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Hallvardbo static site — S3 + CloudFront with HTTPS
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: hallvardbo.no
+    Description: Primary domain name
+  HostedZoneId:
+    Type: String
+    Default: ''
+    Description: Route53 Hosted Zone ID (leave empty to skip DNS records)
+  AcmCertificateArn:
+    Type: String
+    Default: ''
+    Description: >-
+      ARN of an existing ACM certificate in us-east-1 for the domain.
+      Leave empty to use CloudFront's default domain (*.cloudfront.net).
+
+Conditions:
+  HasCertificate: !Not [!Equals [!Ref AcmCertificateArn, '']]
+  HasHostedZone: !Not [!Equals [!Ref HostedZoneId, '']]
+  HasCertAndZone: !And
+    - !Condition HasCertificate
+    - !Condition HasHostedZone
+
+Resources:
+  # S3 bucket — private, accessed only via CloudFront OAC
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${DomainName}-site'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # Origin Access Control — lets CloudFront read from the private bucket
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${DomainName}-oac'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # Bucket policy — allow only CloudFront via OAC
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontOAC
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+  # CloudFront function for clean URLs (append index.html to directory requests)
+  UrlRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${AWS::StackName}-url-rewrite'
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Rewrite directory requests to index.html
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+          if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+          } else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+          }
+          return request;
+        }
+
+  # CloudFront distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        HttpVersion: http2and3
+        PriceClass: PriceClass_100  # US, Canada, Europe — cheapest
+        Comment: !Sub 'Hallvardbo (${DomainName})'
+
+        Aliases: !If
+          - HasCertificate
+          - - !Ref DomainName
+            - !Sub 'www.${DomainName}'
+          - !Ref AWS::NoValue
+
+        ViewerCertificate: !If
+          - HasCertificate
+          - AcmCertificateArn: !Ref AcmCertificateArn
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
+          - CloudFrontDefaultCertificate: true
+
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt CloudFrontOAC.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # CachingOptimized
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt UrlRewriteFunction.FunctionMetadata.FunctionARN
+
+        # Cache images longer
+        CacheBehaviors:
+          - PathPattern: 'images/*'
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 60
+          - ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 60
+
+  # Route53 DNS records (only if HostedZoneId is provided)
+  DnsRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: HasCertAndZone
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2  # CloudFront's fixed hosted zone ID
+
+  WwwDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: HasCertAndZone
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub 'www.${DomainName}'
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+
+Outputs:
+  CloudFrontDomain:
+    Description: CloudFront distribution domain name
+    Value: !GetAtt CloudFrontDistribution.DomainName
+  CloudFrontDistributionId:
+    Description: CloudFront distribution ID (needed for cache invalidation)
+    Value: !Ref CloudFrontDistribution
+  S3BucketName:
+    Description: S3 bucket name (needed for deploy script)
+    Value: !Ref SiteBucket

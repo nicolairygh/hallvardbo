@@ -16,27 +16,51 @@ js/main.js          — Mobile menu, lightbox, scroll animations
 images/             — All site images
 ```
 
-## Deploy to EC2
+## Infrastructure (S3 + CloudFront)
+
+The site is hosted on AWS using S3 for storage and CloudFront for CDN/HTTPS.
+
+### One-time setup
+
+**1. Request an ACM certificate (must be in us-east-1 for CloudFront):**
 
 ```bash
-./deploy.sh ubuntu@your-ec2-host
+aws acm request-certificate \
+  --region us-east-1 \
+  --domain-name hallvardbo.no \
+  --subject-alternative-names '*.hallvardbo.no' \
+  --validation-method DNS
 ```
 
-This syncs files via rsync, installs the nginx config, and reloads nginx.
+Complete DNS validation as instructed, then note the certificate ARN.
 
-### First-time EC2 setup
+**2. Deploy the CloudFormation stack:**
 
 ```bash
-sudo apt update && sudo apt install -y nginx
-sudo mkdir -p /var/www/hallvardbo
+aws cloudformation deploy \
+  --template-file cloudformation.yaml \
+  --stack-name hallvardbo-site \
+  --parameter-overrides \
+    DomainName=hallvardbo.no \
+    AcmCertificateArn=arn:aws:acm:us-east-1:ACCOUNT:certificate/ID \
+    HostedZoneId=YOUR_ZONE_ID
 ```
 
-### HTTPS with Let's Encrypt
+- `AcmCertificateArn` — from step 1. Omit to use the default `*.cloudfront.net` domain.
+- `HostedZoneId` — your Route53 hosted zone. Omit to skip DNS records (manage DNS manually).
+
+**3. Point your domain to CloudFront** (if not using Route53):
+
+Create CNAME records for `hallvardbo.no` and `www.hallvardbo.no` pointing to the CloudFront domain shown in the stack outputs.
+
+### Deploy site content
 
 ```bash
-sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d hallvardbo.no -d www.hallvardbo.no
+./deploy.sh              # uses default stack name 'hallvardbo-site'
+./deploy.sh my-stack      # or specify a custom stack name
 ```
+
+This syncs files to S3, sets cache headers, and invalidates the CloudFront cache.
 
 ## Image optimization
 
@@ -47,4 +71,4 @@ brew install imagemagick
 
 ## Editing content
 
-All content is in plain HTML files. To update text, pricing, or contacts, edit the relevant `.html` file directly.
+All content is in plain HTML files. To update text, pricing, or contacts, edit the relevant `.html` file directly, then run `./deploy.sh`.
